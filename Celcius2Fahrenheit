@@ -1,0 +1,30 @@
+import tensorflow as tf
+import numpy as np
+import logging
+import keras
+
+logger = logging.getLogger()
+logger.setLevel(logging.ERROR)
+
+celsius_q    = np.array([-40, -10,  0,  8, 15, 22,  38],  dtype=float)
+fahrenheit_a = np.array([-40,  14, 32, 46, 59, 72, 100],  dtype=float)
+
+for i,c in enumerate(celsius_q):
+    print(f"{c} degrees Celsius = {fahrenheit_a[i]} degrees Fahrenheit")
+
+model = keras.Sequential([
+    keras.Input(shape=[1]),
+    keras.layers.Dense(units=1)
+])
+
+model.compile(loss='mean_squared_error', optimizer = keras.optimizers.Adam(0.1))
+
+history = model.fit(celsius_q, fahrenheit_a, epochs=600, verbose=False)
+print("Finished training the model")
+
+print("Printing layers just to show how close it came to the actual equation: f = 1.8c + 32")
+for l in model.layers:
+    print(l.get_weights())
+
+fah = model.predict(np.array([100.0], dtype=float))
+print(f"C=100, Prediction={fah[0][0]}, Actual=212")
